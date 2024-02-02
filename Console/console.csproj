@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\MailMigrationBackend\MailMigrationBackend.csproj" />
+      <ProjectReference Include="..\MailMigrationBackend\MailMigrationBackend.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,6 +18,47 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
+      <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="sqLiteDb\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="sqLiteDb\SqLiteDb.db">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\bKuYHf.qmiGjmGjqlDQW@WKEIbt.pl.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\ggnEhY.GfAxQDSYlizxr@NymzDT.de.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\gYJAzV.eRgHgPZOQlmeE@BAYvfk.pl.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\lbULGF.zLUkSjNcgFOTj@JLRzjT.nl.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\NIDEgY.OPikPfLOhyGmD@JLVzMH.be.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\PclOKD.UuuoadJMbwTMO@ABKnGh.de.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\uUBWJq.TgKwlFjGpBImA@OIcDjJ.co.uk.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\UvKTFH.UpgUEaLSFXlkx@ODxmnq.jp.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\XaQWLS.zpVkaUvMKqSHd@lCqHAJ.be.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="jsonDb\yagsvo.wAtnTyjTqJQHs@cHjXhc.de.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

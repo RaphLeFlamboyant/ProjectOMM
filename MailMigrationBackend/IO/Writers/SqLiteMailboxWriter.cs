@@ -1,11 +1,11 @@
-﻿using MailMigrationBackend.Converters;
-using MailMigrationBackend.ExternalModels.SqLiteProvider;
+﻿using MailMigrationBackend.ExternalModels.SqLite;
 using MailMigrationBackend.IO.Contexts;
+using MailMigrationBackend.Mappers;
 using MailMigrationBackend.Models;
 
 namespace MailMigrationBackend.IO.Writers;
 
-public class SqLiteMailboxWriter
+public class SqLiteMailboxWriter : IMailboxWriter
 {
     private SqLiteModelMapper _mapper;
     
@@ -18,11 +18,47 @@ public class SqLiteMailboxWriter
     {
         using var dbContext = new SqLiteDbContext();
 
-        var mappedItems = _mapper.MapFromInternalModel(mailboxInternalModel);
+        // mapping
+        Mailbox mailboxSqLiteModel = new();
+        mailboxSqLiteModel.Email = mailboxInternalModel.EmailAddress;
+        mailboxSqLiteModel.Password = mailboxInternalModel.Password;
+        mailboxSqLiteModel.Quota = 100;
+
+        //save
+        dbContext.Mailboxes.Add(mailboxSqLiteModel);
+        dbContext.SaveChanges();
         
-        dbContext.Mailbox.Add(mappedItems.MailboxSqLiteModel);
-        dbContext.Folders.AddRange(mappedItems.FolderSqLiteModels);
-        dbContext.Emails.AddRange(mappedItems.EmailSqLiteModels);
+        // id 
+        mailboxSqLiteModel = dbContext.Mailboxes.First(m => m.Email == mailboxSqLiteModel.Email);
+        
+        // mapping
+        var folderSqLiteModels = mailboxInternalModel.Folders
+            .Select(m => new Folder { Name = m.Name, MailboxId = mailboxSqLiteModel.Id })
+            .ToList();
+        
+        // save
+        dbContext.Folders.AddRange(folderSqLiteModels);
+        dbContext.SaveChanges();
+        
+        // id
+        var folderNameToFolder = dbContext.Folders
+            .Where(f => f.MailboxId == mailboxSqLiteModel.Id)
+            .ToDictionary(f => f.Name);
+        
+        // mapping
+        var emailSqLiteModels = mailboxInternalModel.Emails.Select(m => new Mail
+        {
+            Subject = m.Subject ?? string.Empty,
+            Body = m.Body,
+            From = m.Sender,
+            To = m.Recipients,
+            Size = m.Size,
+            FolderId = folderNameToFolder[m.Folder.Name].Id,
+            MailboxId = mailboxSqLiteModel.Id
+        }).ToList();
+        
+        // save
+        dbContext.Mails.AddRange(emailSqLiteModels);
         dbContext.SaveChanges();
     }
 }

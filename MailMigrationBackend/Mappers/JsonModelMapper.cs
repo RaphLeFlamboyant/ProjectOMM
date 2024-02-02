@@ -54,7 +54,8 @@ public class JsonModelMapper
         {
             //
             MailboxQuota = 50,
-            MailboxSize = 0
+            MailboxSize = 0,
+            Mails = new List<JsonEmailModel>()
         };
 
         foreach (var email in internalModel.Emails)

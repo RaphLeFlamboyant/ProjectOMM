@@ -1,16 +1,16 @@
-﻿using MailMigrationBackend.ExternalModels.SqLiteProvider;
+﻿using MailMigrationBackend.ExternalModels.SqLite;
 using MailMigrationBackend.Models;
 
-namespace MailMigrationBackend.Converters;
+namespace MailMigrationBackend.Mappers;
 
 public class SqLiteModelMapper
 {
-    public MailboxModel MapToInternalModel(SqLiteMailboxModel MailboxSqLiteModel, List<SqLiteFolderModel> folderSqLiteModels, List<SqLiteEmailModel> emailSqLiteModels)
+    public MailboxModel MapToInternalModel(Mailbox mailboxSqLiteModel, List<Folder> folderSqLiteModels, List<Mail> emailSqLiteModels)
     {
         MailboxModel mailboxInternalModel = new()
         {
-            EmailAddress = MailboxSqLiteModel.Email,
-            Password = MailboxSqLiteModel.Password
+            EmailAddress = mailboxSqLiteModel.Email,
+            Password = mailboxSqLiteModel.Password
         };
 
         var folderIdToInternalModel = new Dictionary<int, FolderModel>();
@@ -36,7 +36,7 @@ public class SqLiteModelMapper
                 Recipients = emailSqLiteModel.To,
                 Size = emailSqLiteModel.Size,
                 //
-                Folder = folderIdToInternalModel[emailSqLiteModel.Id]
+                Folder = folderIdToInternalModel[emailSqLiteModel.FolderId]
             };
             mailboxInternalModel.Emails.Add(emailInternalModel);
         }
@@ -44,30 +44,26 @@ public class SqLiteModelMapper
         return mailboxInternalModel;
     }
 
-    public (SqLiteMailboxModel MailboxSqLiteModel,
-        List<SqLiteFolderModel> FolderSqLiteModels,
-        List<SqLiteEmailModel> EmailSqLiteModels) MapFromInternalModel(MailboxModel mailboxInternalModel)
+    public (Mailbox MailboxSqLiteModel,
+        List<Folder> FolderSqLiteModels,
+        List<Mail> EmailSqLiteModels) MapFromInternalModel(MailboxModel mailboxInternalModel)
     {
-        SqLiteMailboxModel mailboxSqLiteModel = new();
+        Mailbox mailboxSqLiteModel = new();
         mailboxSqLiteModel.Email = mailboxInternalModel.EmailAddress;
         //
         mailboxSqLiteModel.Quota = 100;
 
         var folderSqLiteModels = mailboxInternalModel.Folders
-            .Select(m => new SqLiteFolderModel { Name = m.Name, Mailbox = mailboxSqLiteModel })
+            .Select(m => new Folder { Name = m.Name })
             .ToList();
 
-        var folderNameToFolder = folderSqLiteModels.ToDictionary(f => f.Name);
-
-        var emailSqLiteModels = mailboxInternalModel.Emails.Select(m => new SqLiteEmailModel
+        var emailSqLiteModels = mailboxInternalModel.Emails.Select(m => new Mail
         {
             Subject = m.Subject,
             Body = m.Body,
             From = m.Sender,
             To = m.Recipients,
-            Size = m.Size,
-            //
-            Folder = folderNameToFolder[m.Folder.Name]
+            Size = m.Size
         }).ToList();
 
         return (mailboxSqLiteModel, folderSqLiteModels, emailSqLiteModels);
